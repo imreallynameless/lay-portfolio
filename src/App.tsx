@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from 'react'
 import { animate, stagger } from 'animejs'
 import Projects from './sections/Projects'
-import Dashboard from './sections/Dashboard'
+import GitHubHeatmap from './components/GitHubHeatmap'
+import StravaHeatmap from './components/StravaHeatmap'
+import SpotifyNow from './components/SpotifyNow'
 
 const tabs = [
   { id: 'home', label: 'home' },
   { id: 'projects', label: 'projects' },
-  { id: 'dashboard', label: 'dashboard' },
 ] as const
 
 type TabId = (typeof tabs)[number]['id']
@@ -47,7 +48,6 @@ function App() {
     }
   }, [activeTab])
 
-  // Entry animations
   useEffect(() => {
     if (navRef.current) {
       animate(navRef.current.querySelectorAll('.nav-item'), {
@@ -82,19 +82,9 @@ function App() {
       {/* Side nav */}
       <nav
         ref={navRef}
-        className="flex flex-col justify-between py-8 px-4 border-r border-charcoal/5 w-48 flex-shrink-0"
+        className="flex flex-col justify-between py-8 px-4 border-r border-charcoal/5 w-44 flex-shrink-0"
       >
         <div className="space-y-1">
-          {/* Logo */}
-          <button
-            onClick={() => setActiveTab('home')}
-            className="nav-item opacity-0 font-display text-xl italic text-charcoal
-                       hover:text-gold-dark transition-colors cursor-pointer mb-8 block"
-          >
-            lay's
-          </button>
-
-          {/* Nav tabs */}
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -111,30 +101,18 @@ function App() {
           ))}
         </div>
 
-        {/* Social icons at bottom of nav */}
+        {/* Social icons */}
         <div ref={socialRef} className="flex gap-3 px-2">
-          <a
-            href="https://github.com/imreallynameless"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="opacity-0 text-warm-gray hover:text-charcoal transition-colors"
-          >
+          <a href="https://github.com/imreallynameless" target="_blank" rel="noopener noreferrer"
+             className="opacity-0 text-warm-gray hover:text-charcoal transition-colors">
             <GitHubIcon />
           </a>
-          <a
-            href="https://www.linkedin.com/in/leiwuhoo/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="opacity-0 text-warm-gray hover:text-charcoal transition-colors"
-          >
+          <a href="https://www.linkedin.com/in/leiwuhoo/" target="_blank" rel="noopener noreferrer"
+             className="opacity-0 text-warm-gray hover:text-charcoal transition-colors">
             <LinkedInIcon />
           </a>
-          <a
-            href="https://x.com/ujustgotleid"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="opacity-0 text-warm-gray hover:text-charcoal transition-colors"
-          >
+          <a href="https://x.com/ujustgotleid" target="_blank" rel="noopener noreferrer"
+             className="opacity-0 text-warm-gray hover:text-charcoal transition-colors">
             <TwitterIcon />
           </a>
         </div>
@@ -145,7 +123,6 @@ function App() {
         <div ref={contentRef} className="h-full">
           {activeTab === 'home' && <HomeContent />}
           {activeTab === 'projects' && <Projects />}
-          {activeTab === 'dashboard' && <Dashboard />}
         </div>
       </main>
     </div>
@@ -154,42 +131,61 @@ function App() {
 
 function HomeContent() {
   const ref = useRef<HTMLDivElement>(null)
+  const [dashboardTab, setDashboardTab] = useState<'github' | 'strava' | 'spotify'>('github')
 
   useEffect(() => {
     if (ref.current) {
       animate(ref.current.querySelectorAll('.home-animate'), {
         opacity: [0, 1],
-        translateY: [20, 0],
-        delay: stagger(100),
-        duration: 600,
+        translateY: [15, 0],
+        delay: stagger(80),
+        duration: 500,
         ease: 'outCubic',
       })
     }
   }, [])
 
   return (
-    <div ref={ref} className="h-full flex flex-col justify-center max-w-2xl">
-      <h1 className="home-animate opacity-0 font-display text-5xl text-charcoal leading-tight">
-        lei <span className="italic text-gold-dark">(lay)</span> wu
-      </h1>
-      <p className="home-animate opacity-0 font-body text-lg text-warm-gray mt-3 leading-relaxed">
-        cs @ carleton · i like to build fun stuff
-      </p>
+    <div ref={ref} className="h-full flex flex-col">
+      {/* Top: intro */}
+      <div className="mb-6">
+        <h1 className="home-animate opacity-0 font-display text-4xl text-charcoal leading-tight">
+          lei <span className="italic text-gold-dark">(lay)</span> wu
+        </h1>
+        <p className="home-animate opacity-0 font-body text-sm text-warm-gray mt-2 max-w-md leading-relaxed">
+          cs @ carleton · i like to build fun stuff
+        </p>
+      </div>
 
-      {/* Wavy divider */}
-      <svg className="home-animate opacity-0 w-48 mt-6 mb-6 text-gold/40" viewBox="0 0 200 20" preserveAspectRatio="none">
-        <path d="M0,10 C40,20 60,0 100,10 C140,20 160,0 200,10" fill="none" stroke="currentColor" strokeWidth="1.5" />
-      </svg>
+      {/* Bottom: dashboards */}
+      <div className="home-animate opacity-0 flex-1 flex flex-col min-h-0">
+        <div className="flex gap-2 mb-4">
+          {([
+            { id: 'github' as const, label: '🟩 github' },
+            { id: 'strava' as const, label: '🏃 strava' },
+            { id: 'spotify' as const, label: '🎵 spotify' },
+          ]).map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setDashboardTab(tab.id)}
+              className={`px-3 py-1.5 rounded-full text-xs font-body tracking-wide
+                         transition-all duration-200 cursor-pointer
+                         ${dashboardTab === tab.id
+                           ? 'bg-charcoal text-cream'
+                           : 'bg-cream-dark text-warm-gray hover:bg-charcoal/10'
+                         }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-      <p className="home-animate opacity-0 font-body text-sm text-charcoal/60 max-w-md leading-relaxed">
-        4th year cs student looking to build products people love.
-        co-op experience in data analysis, project coordination, and software dev.
-        when i'm not coding, i'm in the gym or climbing riot games leaderboards.
-      </p>
-
-      <p className="home-animate opacity-0 font-body text-xs text-warm-gray/50 mt-8">
-        betcha can't visit just once
-      </p>
+        <div className="bg-cream-dark rounded-2xl p-5 flex-1 overflow-auto">
+          {dashboardTab === 'github' && <GitHubHeatmap />}
+          {dashboardTab === 'strava' && <StravaHeatmap />}
+          {dashboardTab === 'spotify' && <SpotifyNow />}
+        </div>
+      </div>
     </div>
   )
 }
