@@ -1,30 +1,28 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate, stagger } from 'animejs'
 
-const GITHUB_USERNAME = 'imreallynameless'
-
-type MonthData = {
-  key: string
-  month: string
-  year: string
+type ContributionDay = {
+  date: string
   count: number
 }
 
+type Week = ContributionDay[]
+
+const GITHUB_USERNAME = 'imreallynameless'
+
 const colorToLevel = (count: number): string => {
-  if (count === 0) return 'bg-charcoal/5'
-  if (count <= 10) return 'bg-gold-light'
-  if (count <= 30) return 'bg-gold'
-  if (count <= 60) return 'bg-gold-dark'
+  if (count === 0) return 'bg-charcoal/8'
+  if (count <= 2) return 'bg-gold-light'
+  if (count <= 5) return 'bg-gold'
+  if (count <= 8) return 'bg-gold-dark'
   return 'bg-red'
 }
 
-const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-
 const GitHubHeatmap = () => {
-  const [months, setMonths] = useState<MonthData[]>([])
+  const [weeks, setWeeks] = useState<Week[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
-  const [selected, setSelected] = useState<string | null>(null)
+  const [hovered, setHovered] = useState<ContributionDay | null>(null)
   const gridRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -35,19 +33,17 @@ const GitHubHeatmap = () => {
         )
         const data = await res.json()
         if (data.contributions) {
-          const contribs: { date: string; count: number }[] = data.contributions
-          const monthMap = new Map<string, number>()
-          contribs.forEach((d) => {
-            const key = d.date.slice(0, 7)
-            monthMap.set(key, (monthMap.get(key) || 0) + d.count)
+          const contribs: ContributionDay[] = data.contributions
+          const weekArr: Week[] = []
+          let current: ContributionDay[] = []
+          contribs.forEach((d, i) => {
+            current.push(d)
+            if (current.length === 7 || i === contribs.length - 1) {
+              weekArr.push(current)
+              current = []
+            }
           })
-          const monthArr: MonthData[] = Array.from(monthMap.entries())
-            .map(([key, count]) => {
-              const [year, monthNum] = key.split('-')
-              return { key, month: MONTH_NAMES[parseInt(monthNum) - 1], year, count }
-            })
-            .sort((a, b) => b.key.localeCompare(a.key))
-          setMonths(monthArr)
+          setWeeks(weekArr)
           setTotal(contribs.reduce((s, d) => s + d.count, 0))
         }
       } catch (err) {
@@ -61,13 +57,12 @@ const GitHubHeatmap = () => {
 
   useEffect(() => {
     if (!loading && gridRef.current) {
-      const cells = gridRef.current.querySelectorAll('.gh-cell')
+      const cells = gridRef.current.querySelectorAll('.c')
       if (cells.length) {
         animate(cells, {
           opacity: [0, 1],
-          scale: [0.8, 1],
-          delay: stagger(30),
-          duration: 300,
+          delay: stagger(1),
+          duration: 200,
           ease: 'outCubic',
         })
       }
@@ -85,28 +80,40 @@ const GitHubHeatmap = () => {
         <span className="font-mono text-[10px] text-warm-gray">{total.toLocaleString()} this year</span>
       </div>
 
-      <div ref={gridRef} className="grid grid-cols-6 gap-[2px]">
-        {months.slice(0, 12).map((m) => (
-          <button
-            key={m.key}
-            onClick={() => setSelected(selected === m.key ? null : m.key)}
-            className={`gh-cell opacity-0 h-10 flex flex-col items-center justify-center
-                       cursor-pointer transition-all duration-150 text-center
-                       ${colorToLevel(m.count)}
-                       ${selected === m.key ? 'ring-1 ring-charcoal' : 'hover:brightness-95'}`}
-          >
-            <span className="font-mono text-[7px] text-charcoal/40 leading-none">{m.month} {m.year.slice(2)}</span>
-            <span className="font-mono text-sm font-bold text-charcoal leading-none mt-0.5">{m.count}</span>
-          </button>
-        ))}
+      <div ref={gridRef} className="overflow-hidden">
+        <div className="flex gap-[2px]">
+          {weeks.map((week, wi) => (
+            <div key={wi} className="flex flex-col gap-[2px]">
+              {week.map((day, di) => (
+                <div
+                  key={`${wi}-${di}`}
+                  className={`c w-[9px] h-[9px] opacity-0 cursor-pointer
+                             ${colorToLevel(day.count)}
+                             ${hovered?.date === day.date ? 'ring-1 ring-charcoal' : ''}`}
+                  onMouseEnter={() => setHovered(day)}
+                  onMouseLeave={() => setHovered(null)}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
 
-      {selected && (() => {
-        const m = months.find((x) => x.key === selected)
-        return m ? (
-          <p className="font-mono text-[10px] text-warm-gray mt-1">{m.month} {m.year} — {m.count} contributions</p>
-        ) : null
-      })()}
+      {/* Hover detail or legend */}
+      <div className="flex items-center justify-between mt-1.5">
+        <span className="font-mono text-[10px] text-warm-gray h-3">
+          {hovered ? `${hovered.date} — ${hovered.count} contributions` : ''}
+        </span>
+        <div className="flex items-center gap-1 text-[9px] font-body text-warm-gray">
+          <span>less</span>
+          <div className="w-[9px] h-[9px] bg-charcoal/8" />
+          <div className="w-[9px] h-[9px] bg-gold-light" />
+          <div className="w-[9px] h-[9px] bg-gold" />
+          <div className="w-[9px] h-[9px] bg-gold-dark" />
+          <div className="w-[9px] h-[9px] bg-red" />
+          <span>more</span>
+        </div>
+      </div>
     </div>
   )
 }

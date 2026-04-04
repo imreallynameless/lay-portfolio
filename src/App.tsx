@@ -142,7 +142,7 @@ function HomeContent() {
   return (
     <div ref={ref} className="h-full flex gap-5">
       {/* Left column — name + github + strava */}
-      <div className="flex-1 flex flex-col gap-4 min-w-0">
+      <div className="flex-1 flex flex-col gap-5 min-w-0">
         {/* Name */}
         <div className="widget opacity-0">
           <h1 className="font-display text-3xl text-charcoal leading-tight">
@@ -154,18 +154,18 @@ function HomeContent() {
         </div>
 
         {/* GitHub */}
-        <div className="widget opacity-0 flex-1 min-h-0">
+        <div className="widget opacity-0">
           <GitHubHeatmap />
         </div>
 
         {/* Strava */}
-        <div className="widget opacity-0 flex-1 min-h-0">
+        <div className="widget opacity-0">
           <StravaHeatmap />
         </div>
       </div>
 
       {/* Right column — spotify */}
-      <div className="widget opacity-0 w-56 flex-shrink-0">
+      <div className="widget opacity-0 w-52 flex-shrink-0">
         <SpotifyNow />
       </div>
     </div>
