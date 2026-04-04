@@ -11,37 +11,32 @@ type Project = {
 const projects: Project[] = [
   {
     title: 'Playground',
-    description:
-      'Full-stack playground featuring Spotify integration, TFT match history, Strava tracking, book bar, and a cooking recipe collection.',
+    description: 'Full-stack playground with Spotify, TFT match history, Strava tracking, book bar, and recipes.',
     url: 'https://laywu.ca/playground',
-    tags: ['react', 'cloudflare workers', 'apis'],
+    tags: ['react', 'workers', 'apis'],
   },
   {
     title: 'Investology',
-    description:
-      'Algorithm that offers investment portfolio recommendations based on MBTI. Built with Vite, React, and FastAPI.',
+    description: 'MBTI-based investment portfolio recommendations. Vite + React + FastAPI.',
     url: 'https://devpost.com/software/tarot-investing',
-    tags: ['react', 'fastapi', 'vite'],
+    tags: ['react', 'fastapi'],
   },
   {
     title: 'Clear Vision',
-    description:
-      'AI model using OpenCV & TensorFlow for real-time waste sorting. Winner of 100+ teams at Hack the Hill.',
+    description: 'Real-time AI waste sorting with OpenCV & TensorFlow. Hack the Hill winner (100+ teams).',
     url: 'https://devpost.com/software/clean-vision',
-    tags: ['python', 'opencv', 'tensorflow', 'hackathon winner'],
+    tags: ['python', 'opencv', 'winner'],
   },
   {
     title: 'Starry Stocks',
-    description:
-      'Processed 200k+ data points to visualize stock transactions with p5.js via WebSockets. Identified outliers using statistical models.',
+    description: '200k+ data points visualized with p5.js via WebSockets. Statistical outlier detection.',
     url: 'https://devpost.com/software/solar-system-stocks',
-    tags: ['p5.js', 'websockets', 'data viz'],
+    tags: ['p5.js', 'data viz'],
   },
   {
     title: 'Search Engine',
-    description:
-      'Web crawler in Python with PageRank, cosine similarity, and TF-IDF for search ranking. Document database for optimized runtime.',
-    tags: ['python', 'pagerank', 'nlp'],
+    description: 'Python web crawler with PageRank, cosine similarity, and TF-IDF ranking.',
+    tags: ['python', 'nlp'],
   },
 ]
 
@@ -53,63 +48,57 @@ const Projects = () => {
     if (cards) {
       animate(cards, {
         opacity: [0, 1],
-        translateY: [30, 0],
-        delay: stagger(100, { start: 200 }),
-        duration: 600,
+        translateY: [20, 0],
+        delay: stagger(80, { start: 100 }),
+        duration: 500,
         ease: 'outCubic',
       })
     }
   }, [])
 
   return (
-    <section ref={sectionRef}>
-      <h2 className="font-display text-5xl italic text-charcoal mb-10">
-        projects
-      </h2>
+    <div ref={sectionRef} className="h-full flex flex-col">
+      <h2 className="font-display text-3xl italic text-charcoal mb-6">projects</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 flex-1 content-start">
         {projects.map((project) => (
-          <div
+          <a
             key={project.title}
-            className="project-card opacity-0 group bg-cream-dark rounded-2xl p-6
-                       hover:bg-gold/10 hover:shadow-lg hover:shadow-gold/10
-                       transition-all duration-300 cursor-default"
+            href={project.url}
+            target={project.url ? '_blank' : undefined}
+            rel={project.url ? 'noopener noreferrer' : undefined}
+            className={`project-card opacity-0 group bg-cream-dark rounded-xl p-4
+                       hover:bg-gold/10 hover:shadow-md hover:shadow-gold/10
+                       transition-all duration-300
+                       ${project.url ? 'cursor-pointer' : 'cursor-default'}`}
           >
-            <div className="flex items-start justify-between mb-3">
-              <h3 className="font-display text-2xl text-charcoal group-hover:text-gold-dark transition-colors">
+            <div className="flex items-start justify-between mb-2">
+              <h3 className="font-display text-lg text-charcoal group-hover:text-gold-dark transition-colors">
                 {project.title}
               </h3>
               {project.url && (
-                <a
-                  href={project.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-warm-gray hover:text-gold-dark transition-colors text-sm font-mono"
-                >
-                  ↗
-                </a>
+                <span className="text-warm-gray group-hover:text-gold-dark transition-colors text-xs font-mono mt-1">↗</span>
               )}
             </div>
 
-            <p className="font-body text-sm text-charcoal/65 leading-relaxed mb-4">
+            <p className="font-body text-xs text-charcoal/55 leading-relaxed mb-3">
               {project.description}
             </p>
 
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-1">
               {project.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2.5 py-0.5 text-xs font-mono rounded-full
-                             bg-charcoal/5 text-warm-gray"
+                  className="px-2 py-0.5 text-[10px] font-mono rounded-full bg-charcoal/5 text-warm-gray"
                 >
                   {tag}
                 </span>
               ))}
             </div>
-          </div>
+          </a>
         ))}
       </div>
-    </section>
+    </div>
   )
 }
 

@@ -1,61 +1,76 @@
 import { useState, useRef, useEffect } from 'react'
 import { animate, stagger } from 'animejs'
-import Home from './sections/Home'
-import About from './sections/About'
 import Projects from './sections/Projects'
 import Dashboard from './sections/Dashboard'
-import Resume from './sections/Resume'
 
 const tabs = [
   { id: 'home', label: 'home' },
-  { id: 'about', label: 'about' },
   { id: 'projects', label: 'projects' },
   { id: 'dashboard', label: 'dashboard' },
-  { id: 'resume', label: 'resume' },
 ] as const
 
 type TabId = (typeof tabs)[number]['id']
 
+// Social icon SVGs
+const GitHubIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+  </svg>
+)
+
+const LinkedInIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+  </svg>
+)
+
+const TwitterIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+)
+
 function App() {
   const [activeTab, setActiveTab] = useState<TabId>('home')
   const contentRef = useRef<HTMLDivElement>(null)
-  const chipRefs = useRef<(HTMLButtonElement | null)[]>([])
+  const navRef = useRef<HTMLDivElement>(null)
+  const socialRef = useRef<HTMLDivElement>(null)
 
-  // Animate content on tab change
   useEffect(() => {
     if (contentRef.current) {
       animate(contentRef.current, {
         opacity: [0, 1],
-        translateY: [20, 0],
-        duration: 500,
+        translateY: [12, 0],
+        duration: 400,
         ease: 'outCubic',
       })
     }
   }, [activeTab])
 
-  // Staggered chip entrance on mount
+  // Entry animations
   useEffect(() => {
-    animate(chipRefs.current.filter(Boolean), {
-      opacity: [0, 1],
-      translateY: [15, 0],
-      delay: stagger(80, { start: 300 }),
-      duration: 600,
-      ease: 'outCubic',
-    })
+    if (navRef.current) {
+      animate(navRef.current.querySelectorAll('.nav-item'), {
+        opacity: [0, 1],
+        translateX: [-10, 0],
+        delay: stagger(80, { start: 200 }),
+        duration: 500,
+        ease: 'outCubic',
+      })
+    }
+    if (socialRef.current) {
+      animate(socialRef.current.children, {
+        opacity: [0, 1],
+        scale: [0.5, 1],
+        delay: stagger(80, { start: 400 }),
+        duration: 400,
+        ease: 'outCubic',
+      })
+    }
   }, [])
 
-  const renderSection = () => {
-    switch (activeTab) {
-      case 'home': return <Home />
-      case 'about': return <About />
-      case 'projects': return <Projects />
-      case 'dashboard': return <Dashboard />
-      case 'resume': return <Resume />
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="h-screen bg-cream flex overflow-hidden">
       {/* Grain overlay */}
       <div
         className="pointer-events-none fixed inset-0 z-50 opacity-[0.03]"
@@ -64,53 +79,117 @@ function App() {
         }}
       />
 
-      {/* Navigation chips */}
-      <nav className="sticky top-0 z-40 bg-cream/80 backdrop-blur-md border-b border-charcoal/5">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+      {/* Side nav */}
+      <nav
+        ref={navRef}
+        className="flex flex-col justify-between py-8 px-4 border-r border-charcoal/5 w-48 flex-shrink-0"
+      >
+        <div className="space-y-1">
           {/* Logo */}
           <button
             onClick={() => setActiveTab('home')}
-            className="font-display text-2xl italic text-charcoal hover:text-gold-dark transition-colors cursor-pointer"
+            className="nav-item opacity-0 font-display text-xl italic text-charcoal
+                       hover:text-gold-dark transition-colors cursor-pointer mb-8 block"
           >
             lay's
           </button>
 
-          {/* Chip tabs */}
-          <div className="flex gap-2">
-            {tabs.map((tab, i) => (
-              <button
-                key={tab.id}
-                ref={(el) => { chipRefs.current[i] = el }}
-                onClick={() => setActiveTab(tab.id)}
-                className={`
-                  opacity-0 px-4 py-1.5 rounded-full text-sm font-body tracking-wide
-                  transition-all duration-300 cursor-pointer
-                  ${activeTab === tab.id
-                    ? 'bg-gold text-charcoal shadow-md shadow-gold/30 scale-105'
-                    : 'bg-cream-dark text-warm-gray hover:bg-gold-light hover:text-charcoal'
-                  }
-                `}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+          {/* Nav tabs */}
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`nav-item opacity-0 block w-full text-left px-3 py-2 rounded-lg text-sm
+                         font-body tracking-wide transition-all duration-200 cursor-pointer
+                         ${activeTab === tab.id
+                           ? 'bg-gold/20 text-charcoal font-medium'
+                           : 'text-warm-gray hover:text-charcoal hover:bg-cream-dark'
+                         }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Social icons at bottom of nav */}
+        <div ref={socialRef} className="flex gap-3 px-2">
+          <a
+            href="https://github.com/imreallynameless"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="opacity-0 text-warm-gray hover:text-charcoal transition-colors"
+          >
+            <GitHubIcon />
+          </a>
+          <a
+            href="https://www.linkedin.com/in/leiwuhoo/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="opacity-0 text-warm-gray hover:text-charcoal transition-colors"
+          >
+            <LinkedInIcon />
+          </a>
+          <a
+            href="https://x.com/ujustgotleid"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="opacity-0 text-warm-gray hover:text-charcoal transition-colors"
+          >
+            <TwitterIcon />
+          </a>
         </div>
       </nav>
 
-      {/* Content area */}
-      <main className="max-w-5xl mx-auto px-6 py-12">
-        <div ref={contentRef}>
-          {renderSection()}
+      {/* Main content */}
+      <main className="flex-1 overflow-hidden p-8">
+        <div ref={contentRef} className="h-full">
+          {activeTab === 'home' && <HomeContent />}
+          {activeTab === 'projects' && <Projects />}
+          {activeTab === 'dashboard' && <Dashboard />}
         </div>
       </main>
+    </div>
+  )
+}
 
-      {/* Footer */}
-      <footer className="max-w-5xl mx-auto px-6 py-8 border-t border-charcoal/5">
-        <p className="text-warm-gray text-sm text-center font-body">
-          lei wu © {new Date().getFullYear()} · betcha can't visit just once
-        </p>
-      </footer>
+function HomeContent() {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (ref.current) {
+      animate(ref.current.querySelectorAll('.home-animate'), {
+        opacity: [0, 1],
+        translateY: [20, 0],
+        delay: stagger(100),
+        duration: 600,
+        ease: 'outCubic',
+      })
+    }
+  }, [])
+
+  return (
+    <div ref={ref} className="h-full flex flex-col justify-center max-w-2xl">
+      <h1 className="home-animate opacity-0 font-display text-5xl text-charcoal leading-tight">
+        lei <span className="italic text-gold-dark">(lay)</span> wu
+      </h1>
+      <p className="home-animate opacity-0 font-body text-lg text-warm-gray mt-3 leading-relaxed">
+        cs @ carleton · i like to build fun stuff
+      </p>
+
+      {/* Wavy divider */}
+      <svg className="home-animate opacity-0 w-48 mt-6 mb-6 text-gold/40" viewBox="0 0 200 20" preserveAspectRatio="none">
+        <path d="M0,10 C40,20 60,0 100,10 C140,20 160,0 200,10" fill="none" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+
+      <p className="home-animate opacity-0 font-body text-sm text-charcoal/60 max-w-md leading-relaxed">
+        4th year cs student looking to build products people love.
+        co-op experience in data analysis, project coordination, and software dev.
+        when i'm not coding, i'm in the gym or climbing riot games leaderboards.
+      </p>
+
+      <p className="home-animate opacity-0 font-body text-xs text-warm-gray/50 mt-8">
+        betcha can't visit just once
+      </p>
     </div>
   )
 }
