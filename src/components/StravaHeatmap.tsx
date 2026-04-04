@@ -92,8 +92,10 @@ const StravaHeatmap = () => {
     }
   }
 
-  const totalActs = months.reduce((s, m) => s + m.activityCount, 0)
-  const totalDist = months.reduce((s, m) => s + m.totalDistance, 0)
+  const currentYear = new Date().getFullYear().toString()
+  const thisYearMonths = months.filter((m) => m.year === currentYear)
+  const totalActs = thisYearMonths.reduce((s, m) => s + m.activityCount, 0)
+  const totalDist = thisYearMonths.reduce((s, m) => s + m.totalDistance, 0)
 
   if (loading) {
     return <p className="font-body text-xs text-warm-gray animate-pulse">loading strava...</p>
@@ -108,7 +110,7 @@ const StravaHeatmap = () => {
 
       <div className="relative">
         <div ref={gridRef} className="grid grid-cols-6 gap-[2px]">
-          {months.slice(0, 12).map((m) => (
+          {thisYearMonths.map((m) => (
             <button
               key={m.month}
               onClick={() => handleClick(m)}
