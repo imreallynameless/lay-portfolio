@@ -40,7 +40,6 @@ const SpotifyNow = () => {
         setLoading(false)
       }
     }
-
     fetchNowPlaying()
     const interval = setInterval(fetchNowPlaying, 30000)
     return () => clearInterval(interval)
@@ -57,17 +56,13 @@ const SpotifyNow = () => {
   }, [loading])
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p className="font-body text-xs text-warm-gray animate-pulse">...</p>
-      </div>
-    )
+    return <p className="font-body text-xs text-warm-gray animate-pulse">...</p>
   }
 
   return (
     <div ref={cardRef} className="opacity-0 h-full flex flex-col">
-      <h3 className="font-display text-lg italic text-charcoal mb-3">
-        {track?.is_playing ? 'now playing' : 'spotify'}
+      <h3 className="font-display text-base italic text-charcoal mb-3">
+        {track?.is_playing ? 'playing' : 'spotify'}
       </h3>
 
       {track?.item ? (
@@ -75,40 +70,34 @@ const SpotifyNow = () => {
           href={track.item.external_urls.spotify}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 flex flex-col group"
+          className="flex-1 flex flex-col group min-h-0"
         >
-          {/* Album art */}
-          <div className="relative flex-shrink-0 mb-3">
+          <div className="relative flex-shrink-0 mb-2">
             <img
               src={track.item.album.images[0]?.url}
               alt={track.item.album.name}
-              className="w-full aspect-square object-cover
-                         group-hover:opacity-80 transition-opacity"
+              className="w-full aspect-square object-cover group-hover:opacity-80 transition-opacity"
             />
             {track.is_playing && (
-              <div className="absolute top-2 right-2 w-2.5 h-2.5 bg-gold animate-pulse" />
+              <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-gold animate-pulse" />
             )}
           </div>
 
-          {/* Track info */}
-          <div className="min-w-0">
-            <p className="font-body text-xs text-charcoal font-medium truncate group-hover:text-gold-dark transition-colors">
-              {track.item.name}
-            </p>
-            <p className="font-body text-[10px] text-warm-gray truncate mt-0.5">
-              {track.item.artists.map((a) => a.name).join(', ')}
-            </p>
+          <p className="font-body text-xs text-charcoal font-medium truncate group-hover:text-gold-dark transition-colors">
+            {track.item.name}
+          </p>
+          <p className="font-body text-[10px] text-warm-gray truncate mt-0.5">
+            {track.item.artists.map((a) => a.name).join(', ')}
+          </p>
 
-            {/* Progress bar */}
-            {track.is_playing && (
-              <div className="mt-2 h-[2px] bg-charcoal/10">
-                <div
-                  className="h-full bg-gold transition-all duration-1000"
-                  style={{ width: `${(track.progress_ms / track.item.duration_ms) * 100}%` }}
-                />
-              </div>
-            )}
-          </div>
+          {track.is_playing && (
+            <div className="mt-2 h-[2px] bg-charcoal/10">
+              <div
+                className="h-full bg-gold"
+                style={{ width: `${(track.progress_ms / track.item.duration_ms) * 100}%` }}
+              />
+            </div>
+          )}
         </a>
       ) : (
         <div className="flex-1 flex items-center justify-center">

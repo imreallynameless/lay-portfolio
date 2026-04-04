@@ -34,23 +34,19 @@ const GitHubHeatmap = () => {
           `https://github-contributions-api.jogruber.de/v4/${GITHUB_USERNAME}?y=last`
         )
         const data = await res.json()
-
         if (data.contributions) {
           const contribs: { date: string; count: number }[] = data.contributions
           const monthMap = new Map<string, number>()
-
           contribs.forEach((d) => {
-            const key = d.date.slice(0, 7) // YYYY-MM
+            const key = d.date.slice(0, 7)
             monthMap.set(key, (monthMap.get(key) || 0) + d.count)
           })
-
           const monthArr: MonthData[] = Array.from(monthMap.entries())
             .map(([key, count]) => {
               const [year, monthNum] = key.split('-')
               return { key, month: MONTH_NAMES[parseInt(monthNum) - 1], year, count }
             })
             .sort((a, b) => b.key.localeCompare(a.key))
-
           setMonths(monthArr)
           setTotal(contribs.reduce((s, d) => s + d.count, 0))
         }
@@ -70,7 +66,7 @@ const GitHubHeatmap = () => {
         animate(cells, {
           opacity: [0, 1],
           scale: [0.8, 1],
-          delay: stagger(20),
+          delay: stagger(30),
           duration: 300,
           ease: 'outCubic',
         })
@@ -83,39 +79,33 @@ const GitHubHeatmap = () => {
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex items-baseline justify-between mb-3">
-        <h3 className="font-display text-lg italic text-charcoal">github</h3>
+    <div>
+      <div className="flex items-baseline justify-between mb-2">
+        <h3 className="font-display text-base italic text-charcoal">github</h3>
         <span className="font-mono text-[10px] text-warm-gray">{total.toLocaleString()} this year</span>
       </div>
 
-      <div ref={gridRef} className="grid grid-cols-12 gap-[3px] flex-1 content-start">
+      <div ref={gridRef} className="grid grid-cols-6 gap-[2px]">
         {months.slice(0, 12).map((m) => (
           <button
             key={m.key}
             onClick={() => setSelected(selected === m.key ? null : m.key)}
-            className={`gh-cell opacity-0 aspect-square flex flex-col items-center justify-center
-                       cursor-pointer transition-all duration-150
+            className={`gh-cell opacity-0 h-10 flex flex-col items-center justify-center
+                       cursor-pointer transition-all duration-150 text-center
                        ${colorToLevel(m.count)}
-                       ${selected === m.key ? 'ring-2 ring-charcoal ring-offset-1 ring-offset-cream' : ''}`}
-            title={`${m.month} ${m.year}: ${m.count} contributions`}
+                       ${selected === m.key ? 'ring-1 ring-charcoal' : 'hover:brightness-95'}`}
           >
-            <span className="font-mono text-[7px] text-charcoal/40 leading-none">{m.year}</span>
-            <span className="font-mono text-[8px] text-charcoal/50 leading-none">{m.month}</span>
-            <span className="font-mono text-xs font-bold text-charcoal leading-none mt-0.5">{m.count}</span>
+            <span className="font-mono text-[7px] text-charcoal/40 leading-none">{m.month} {m.year.slice(2)}</span>
+            <span className="font-mono text-sm font-bold text-charcoal leading-none mt-0.5">{m.count}</span>
           </button>
         ))}
       </div>
 
-      {/* Selected detail */}
       {selected && (() => {
-        const m = months.find((m) => m.key === selected)
-        if (!m) return null
-        return (
-          <div className="mt-2 font-mono text-[10px] text-warm-gray">
-            {m.month} {m.year} — {m.count} contributions
-          </div>
-        )
+        const m = months.find((x) => x.key === selected)
+        return m ? (
+          <p className="font-mono text-[10px] text-warm-gray mt-1">{m.month} {m.year} — {m.count} contributions</p>
+        ) : null
       })()}
     </div>
   )
