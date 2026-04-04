@@ -1,0 +1,21 @@
+# Dependencies
+node_modules
+.DS_Store
+
+# Build
+dist
+dist-ssr
+*.local
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Editor
+*.sw?
+.vscode
+.idea
+
+# Generated
+public/book-data.json
