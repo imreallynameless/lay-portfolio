@@ -67,7 +67,7 @@ const Projects = () => {
             href={project.url}
             target={project.url ? '_blank' : undefined}
             rel={project.url ? 'noopener noreferrer' : undefined}
-            className={`project-card opacity-0 group bg-cream-dark rounded-xl p-4
+            className={`project-card opacity-0 group bg-cream-dark p-4
                        hover:bg-gold/10 hover:shadow-md hover:shadow-gold/10
                        transition-all duration-300
                        ${project.url ? 'cursor-pointer' : 'cursor-default'}`}
@@ -89,7 +89,7 @@ const Projects = () => {
               {project.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-0.5 text-[10px] font-mono rounded-full bg-charcoal/5 text-warm-gray"
+                  className="px-2 py-0.5 text-[10px] font-mono bg-charcoal/5 text-warm-gray"
                 >
                   {tag}
                 </span>

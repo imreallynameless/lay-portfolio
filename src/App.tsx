@@ -89,7 +89,7 @@ function App() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`nav-item opacity-0 block w-full text-left px-3 py-2 rounded-lg text-sm
+              className={`nav-item opacity-0 block w-full text-left px-3 py-2 text-sm
                          font-body tracking-wide transition-all duration-200 cursor-pointer
                          ${activeTab === tab.id
                            ? 'bg-gold/20 text-charcoal font-medium'
@@ -136,39 +136,39 @@ function HomeContent() {
     if (ref.current) {
       animate(ref.current.querySelectorAll('.widget'), {
         opacity: [0, 1],
-        translateY: [20, 0],
-        delay: stagger(120),
-        duration: 600,
+        translateY: [15, 0],
+        delay: stagger(80),
+        duration: 500,
         ease: 'outCubic',
       })
     }
   }, [])
 
   return (
-    <div ref={ref} className="h-full overflow-auto space-y-4 pr-2">
-      {/* Intro - compact */}
-      <div className="widget opacity-0">
-        <h1 className="font-display text-4xl text-charcoal leading-tight">
+    <div ref={ref} className="h-full grid grid-cols-12 grid-rows-12 gap-2">
+      {/* Name */}
+      <div className="widget opacity-0 col-span-8 row-span-2 flex flex-col justify-center">
+        <h1 className="font-display text-3xl text-charcoal leading-tight">
           lei <span className="italic text-gold-dark">(lay)</span> wu
         </h1>
-        <p className="font-body text-sm text-warm-gray mt-1">
+        <p className="font-body text-xs text-warm-gray mt-1">
           cs @ carleton · i like to build fun stuff
         </p>
       </div>
 
-      {/* GitHub widget */}
-      <div className="widget opacity-0 bg-cream-dark rounded-2xl p-5">
+      {/* Spotify - top right, tall */}
+      <div className="widget opacity-0 col-span-4 row-span-5 bg-cream-dark p-4 overflow-hidden">
+        <SpotifyNow />
+      </div>
+
+      {/* GitHub - wide left */}
+      <div className="widget opacity-0 col-span-8 row-span-5 bg-cream-dark p-4 overflow-hidden">
         <GitHubHeatmap />
       </div>
 
-      {/* Strava widget */}
-      <div className="widget opacity-0 bg-cream-dark rounded-2xl p-5">
+      {/* Strava - bottom, full width */}
+      <div className="widget opacity-0 col-span-12 row-span-5 bg-cream-dark p-4 overflow-hidden">
         <StravaHeatmap />
-      </div>
-
-      {/* Spotify widget */}
-      <div className="widget opacity-0 bg-cream-dark rounded-2xl p-5">
-        <SpotifyNow />
       </div>
     </div>
   )
