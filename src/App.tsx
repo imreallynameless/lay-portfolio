@@ -131,60 +131,44 @@ function App() {
 
 function HomeContent() {
   const ref = useRef<HTMLDivElement>(null)
-  const [dashboardTab, setDashboardTab] = useState<'github' | 'strava' | 'spotify'>('github')
 
   useEffect(() => {
     if (ref.current) {
-      animate(ref.current.querySelectorAll('.home-animate'), {
+      animate(ref.current.querySelectorAll('.widget'), {
         opacity: [0, 1],
-        translateY: [15, 0],
-        delay: stagger(80),
-        duration: 500,
+        translateY: [20, 0],
+        delay: stagger(120),
+        duration: 600,
         ease: 'outCubic',
       })
     }
   }, [])
 
   return (
-    <div ref={ref} className="h-full flex flex-col">
-      {/* Top: intro */}
-      <div className="mb-6">
-        <h1 className="home-animate opacity-0 font-display text-4xl text-charcoal leading-tight">
+    <div ref={ref} className="h-full overflow-auto space-y-4 pr-2">
+      {/* Intro - compact */}
+      <div className="widget opacity-0">
+        <h1 className="font-display text-4xl text-charcoal leading-tight">
           lei <span className="italic text-gold-dark">(lay)</span> wu
         </h1>
-        <p className="home-animate opacity-0 font-body text-sm text-warm-gray mt-2 max-w-md leading-relaxed">
+        <p className="font-body text-sm text-warm-gray mt-1">
           cs @ carleton · i like to build fun stuff
         </p>
       </div>
 
-      {/* Bottom: dashboards */}
-      <div className="home-animate opacity-0 flex-1 flex flex-col min-h-0">
-        <div className="flex gap-2 mb-4">
-          {([
-            { id: 'github' as const, label: '🟩 github' },
-            { id: 'strava' as const, label: '🏃 strava' },
-            { id: 'spotify' as const, label: '🎵 spotify' },
-          ]).map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setDashboardTab(tab.id)}
-              className={`px-3 py-1.5 rounded-full text-xs font-body tracking-wide
-                         transition-all duration-200 cursor-pointer
-                         ${dashboardTab === tab.id
-                           ? 'bg-charcoal text-cream'
-                           : 'bg-cream-dark text-warm-gray hover:bg-charcoal/10'
-                         }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+      {/* GitHub widget */}
+      <div className="widget opacity-0 bg-cream-dark rounded-2xl p-5">
+        <GitHubHeatmap />
+      </div>
 
-        <div className="bg-cream-dark rounded-2xl p-5 flex-1 overflow-auto">
-          {dashboardTab === 'github' && <GitHubHeatmap />}
-          {dashboardTab === 'strava' && <StravaHeatmap />}
-          {dashboardTab === 'spotify' && <SpotifyNow />}
-        </div>
+      {/* Strava widget */}
+      <div className="widget opacity-0 bg-cream-dark rounded-2xl p-5">
+        <StravaHeatmap />
+      </div>
+
+      {/* Spotify widget */}
+      <div className="widget opacity-0 bg-cream-dark rounded-2xl p-5">
+        <SpotifyNow />
       </div>
     </div>
   )
