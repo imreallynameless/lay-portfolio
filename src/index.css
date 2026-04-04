@@ -44,6 +44,7 @@
     color: var(--color-charcoal);
     min-height: 100vh;
     overflow-x: hidden;
+    text-transform: lowercase;
   }
 
   ::selection {
