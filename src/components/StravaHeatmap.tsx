@@ -1,6 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate, stagger } from 'animejs'
 
+type Activity = {
+  id: number
+  name: string
+  start_date: string
+  distance: number
+  moving_time: number
+  type: string
+}
+
 type MonthlySummary = {
   month: string
   monthName: string
@@ -20,16 +29,19 @@ const activityColor = (count: number): string => {
   return 'bg-red'
 }
 
-const formatDistance = (m: number) => `${(m / 1000).toFixed(0)}km`
+const formatDist = (m: number) => `${(m / 1000).toFixed(0)}km`
 const formatTime = (s: number) => {
   const h = Math.floor(s / 3600)
-  const m = Math.floor((s % 3600) / 60)
-  return h > 0 ? `${h}h${m}m` : `${m}m`
+  const min = Math.floor((s % 3600) / 60)
+  return h > 0 ? `${h}h${min}m` : `${min}m`
 }
 
 const StravaHeatmap = () => {
   const [months, setMonths] = useState<MonthlySummary[]>([])
   const [loading, setLoading] = useState(true)
+  const [selected, setSelected] = useState<string | null>(null)
+  const [activities, setActivities] = useState<Activity[]>([])
+  const [loadingActs, setLoadingActs] = useState(false)
   const gridRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -54,7 +66,7 @@ const StravaHeatmap = () => {
         animate(cells, {
           opacity: [0, 1],
           scale: [0.8, 1],
-          delay: stagger(20, { from: 'first' }),
+          delay: stagger(20),
           duration: 300,
           ease: 'outCubic',
         })
@@ -62,16 +74,31 @@ const StravaHeatmap = () => {
     }
   }, [loading])
 
-  const totalActivities = months.reduce((s, m) => s + m.activityCount, 0)
-  const totalDistance = months.reduce((s, m) => s + m.totalDistance, 0)
+  const handleClick = async (month: MonthlySummary) => {
+    if (selected === month.month) {
+      setSelected(null)
+      setActivities([])
+      return
+    }
+    setSelected(month.month)
+    setLoadingActs(true)
+    try {
+      const res = await fetch(`${STRAVA_BASE}/activities-by-month?month=${month.month}`)
+      const data = await res.json()
+      setActivities(data.activities || [])
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoadingActs(false)
+    }
+  }
+
+  const totalActs = months.reduce((s, m) => s + m.activityCount, 0)
+  const totalDist = months.reduce((s, m) => s + m.totalDistance, 0)
   const totalTime = months.reduce((s, m) => s + m.totalTime, 0)
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p className="font-body text-xs text-warm-gray animate-pulse">loading...</p>
-      </div>
-    )
+    return <p className="font-body text-xs text-warm-gray animate-pulse">loading strava...</p>
   }
 
   return (
@@ -79,42 +106,59 @@ const StravaHeatmap = () => {
       <div className="flex items-baseline justify-between mb-3">
         <h3 className="font-display text-lg italic text-charcoal">strava</h3>
         <div className="flex gap-3 font-mono text-[10px] text-warm-gray">
-          <span>{totalActivities} activities</span>
-          <span>{formatDistance(totalDistance)}</span>
+          <span>{totalActs} activities</span>
+          <span>{formatDist(totalDist)}</span>
           <span>{formatTime(totalTime)}</span>
         </div>
       </div>
 
-      {/* Contribution-board style grid */}
-      <div ref={gridRef} className="flex-1 flex items-center">
-        <div className="grid grid-cols-12 gap-[3px] w-full">
-          {months.slice(0, 24).map((month) => (
-            <div
-              key={month.month}
-              className={`strava-cell opacity-0 aspect-square flex flex-col items-center justify-center
-                         ${activityColor(month.activityCount)}`}
-              title={`${month.monthName} ${month.year}: ${month.activityCount} activities`}
-            >
-              <span className="font-mono text-[8px] text-charcoal/50 leading-none">
-                {month.monthName.slice(0, 3)}
-              </span>
-              <span className="font-mono text-xs font-bold text-charcoal leading-none mt-0.5">
-                {month.activityCount}
-              </span>
-            </div>
-          ))}
-        </div>
+      <div ref={gridRef} className="grid grid-cols-12 gap-[3px] content-start">
+        {months.slice(0, 12).map((m) => (
+          <button
+            key={m.month}
+            onClick={() => handleClick(m)}
+            className={`strava-cell opacity-0 aspect-square flex flex-col items-center justify-center
+                       cursor-pointer transition-all duration-150
+                       ${activityColor(m.activityCount)}
+                       ${selected === m.month ? 'ring-2 ring-charcoal ring-offset-1 ring-offset-cream' : ''}`}
+            title={`${m.monthName} ${m.year}: ${m.activityCount} activities`}
+          >
+            <span className="font-mono text-[7px] text-charcoal/40 leading-none">{m.year}</span>
+            <span className="font-mono text-[8px] text-charcoal/50 leading-none">{m.monthName.slice(0, 3)}</span>
+            <span className="font-mono text-xs font-bold text-charcoal leading-none mt-0.5">{m.activityCount}</span>
+          </button>
+        ))}
       </div>
 
-      <div className="flex items-center justify-end gap-1 mt-2 text-[9px] font-body text-warm-gray">
-        <span>less</span>
-        <div className="w-[8px] h-[8px] bg-charcoal/5" />
-        <div className="w-[8px] h-[8px] bg-gold-light" />
-        <div className="w-[8px] h-[8px] bg-gold" />
-        <div className="w-[8px] h-[8px] bg-gold-dark" />
-        <div className="w-[8px] h-[8px] bg-red" />
-        <span>more</span>
-      </div>
+      {/* Selected month activities */}
+      {selected && (
+        <div className="mt-2 max-h-24 overflow-auto">
+          {loadingActs ? (
+            <p className="font-body text-[10px] text-warm-gray animate-pulse">loading...</p>
+          ) : activities.length > 0 ? (
+            <div className="space-y-0.5">
+              {activities.slice(0, 5).map((a) => (
+                <a
+                  key={a.id}
+                  href={`https://www.strava.com/activities/${a.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between font-mono text-[10px] text-warm-gray
+                             hover:text-charcoal transition-colors py-0.5"
+                >
+                  <span className="truncate mr-2">{a.name}</span>
+                  <span className="flex-shrink-0">{formatDist(a.distance)} · {formatTime(a.moving_time)}</span>
+                </a>
+              ))}
+              {activities.length > 5 && (
+                <p className="font-mono text-[9px] text-warm-gray/50">+{activities.length - 5} more</p>
+              )}
+            </div>
+          ) : (
+            <p className="font-body text-[10px] text-warm-gray">no activities</p>
+          )}
+        </div>
+      )}
     </div>
   )
 }

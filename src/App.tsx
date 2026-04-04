@@ -157,17 +157,17 @@ function HomeContent() {
       </div>
 
       {/* Spotify - top right, tall */}
-      <div className="widget opacity-0 col-span-4 row-span-5 bg-cream-dark p-4 overflow-hidden">
+      <div className="widget opacity-0 col-span-4 row-span-5 overflow-hidden">
         <SpotifyNow />
       </div>
 
       {/* GitHub - wide left */}
-      <div className="widget opacity-0 col-span-8 row-span-5 bg-cream-dark p-4 overflow-hidden">
+      <div className="widget opacity-0 col-span-8 row-span-5 overflow-hidden">
         <GitHubHeatmap />
       </div>
 
       {/* Strava - bottom, full width */}
-      <div className="widget opacity-0 col-span-12 row-span-5 bg-cream-dark p-4 overflow-hidden">
+      <div className="widget opacity-0 col-span-12 row-span-5 overflow-hidden">
         <StravaHeatmap />
       </div>
     </div>
