@@ -101,7 +101,7 @@ const StravaHeatmap = () => {
 
   return (
     <div>
-      <div className="flex items-baseline justify-between mb-2">
+      <div className="flex items-baseline gap-2 mb-2">
         <h3 className="font-display text-base italic text-charcoal">strava</h3>
         <span className="font-mono text-[10px] text-warm-gray">{totalActs} activities · {fmtDist(totalDist)}</span>
       </div>

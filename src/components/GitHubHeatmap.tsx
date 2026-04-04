@@ -75,13 +75,13 @@ const GitHubHeatmap = () => {
 
   return (
     <div>
-      <div className="flex items-baseline justify-between mb-2">
+      <div className="flex items-baseline gap-2 mb-2">
         <h3 className="font-display text-base italic text-charcoal">github</h3>
         <span className="font-mono text-[10px] text-warm-gray">{total.toLocaleString()} this year</span>
       </div>
 
-      <div ref={gridRef} className="overflow-hidden">
-        <div className="flex gap-[2px]">
+      <div ref={gridRef} className="overflow-hidden w-full">
+        <div className="flex gap-[2px] w-full justify-between">
           {weeks.map((week, wi) => (
             <div key={wi} className="flex flex-col gap-[2px]">
               {week.map((day, di) => (

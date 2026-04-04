@@ -47,63 +47,61 @@ const SpotifyNow = () => {
 
   useEffect(() => {
     if (!loading && cardRef.current) {
-      animate(cardRef.current, {
-        opacity: [0, 1],
-        duration: 500,
-        ease: 'outCubic',
-      })
+      animate(cardRef.current, { opacity: [0, 1], duration: 500, ease: 'outCubic' })
     }
   }, [loading])
 
-  if (loading) {
-    return <p className="font-body text-xs text-warm-gray animate-pulse">...</p>
+  if (loading) return null
+
+  if (!track?.item) {
+    return (
+      <div className="flex items-center gap-2">
+        <h3 className="font-display text-base italic text-charcoal">spotify</h3>
+        <span className="font-body text-xs text-warm-gray">· nothing playing</span>
+      </div>
+    )
   }
 
   return (
-    <div ref={cardRef} className="opacity-0 h-full flex flex-col">
-      <h3 className="font-display text-base italic text-charcoal mb-3">
-        {track?.is_playing ? 'playing' : 'spotify'}
-      </h3>
-
-      {track?.item ? (
-        <a
-          href={track.item.external_urls.spotify}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex-1 flex flex-col group min-h-0"
-        >
-          <div className="relative flex-shrink-0 mb-2">
-            <img
-              src={track.item.album.images[0]?.url}
-              alt={track.item.album.name}
-              className="w-full aspect-square object-cover group-hover:opacity-80 transition-opacity"
-            />
-            {track.is_playing && (
-              <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-gold animate-pulse" />
-            )}
-          </div>
-
-          <p className="font-body text-xs text-charcoal font-medium truncate group-hover:text-gold-dark transition-colors">
-            {track.item.name}
-          </p>
-          <p className="font-body text-[10px] text-warm-gray truncate mt-0.5">
-            {track.item.artists.map((a) => a.name).join(', ')}
-          </p>
-
+    <div ref={cardRef} className="opacity-0">
+      <a
+        href={track.item.external_urls.spotify}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-3 group"
+      >
+        {/* Album art */}
+        <div className="relative flex-shrink-0">
+          <img
+            src={track.item.album.images[0]?.url}
+            alt={track.item.album.name}
+            className="w-10 h-10 object-cover group-hover:opacity-80 transition-opacity"
+          />
           {track.is_playing && (
-            <div className="mt-2 h-[2px] bg-charcoal/10">
-              <div
-                className="h-full bg-gold"
-                style={{ width: `${(track.progress_ms / track.item.duration_ms) * 100}%` }}
-              />
+            <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-gold animate-pulse" />
+          )}
+        </div>
+
+        {/* Info */}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-baseline gap-2">
+            <h3 className="font-display text-base italic text-charcoal">
+              {track.is_playing ? 'playing' : 'last played'}
+            </h3>
+            <span className="font-body text-xs text-charcoal font-medium truncate group-hover:text-gold-dark transition-colors">
+              {track.item.name}
+            </span>
+            <span className="font-body text-[10px] text-warm-gray truncate">
+              {track.item.artists.map((a) => a.name).join(', ')}
+            </span>
+          </div>
+          {track.is_playing && (
+            <div className="mt-1 h-[2px] bg-charcoal/10 max-w-xs">
+              <div className="h-full bg-gold" style={{ width: `${(track.progress_ms / track.item.duration_ms) * 100}%` }} />
             </div>
           )}
-        </a>
-      ) : (
-        <div className="flex-1 flex items-center justify-center">
-          <p className="font-body text-xs text-warm-gray">nothing playing</p>
         </div>
-      )}
+      </a>
     </div>
   )
 }

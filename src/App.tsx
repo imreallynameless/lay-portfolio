@@ -99,17 +99,11 @@ function App() {
 
         <div ref={socialRef} className="flex gap-3 px-2">
           <a href="https://github.com/imreallynameless" target="_blank" rel="noopener noreferrer"
-             className="opacity-0 text-warm-gray hover:text-charcoal transition-colors">
-            <GitHubIcon />
-          </a>
+             className="opacity-0 text-warm-gray hover:text-charcoal transition-colors"><GitHubIcon /></a>
           <a href="https://www.linkedin.com/in/leiwuhoo/" target="_blank" rel="noopener noreferrer"
-             className="opacity-0 text-warm-gray hover:text-charcoal transition-colors">
-            <LinkedInIcon />
-          </a>
+             className="opacity-0 text-warm-gray hover:text-charcoal transition-colors"><LinkedInIcon /></a>
           <a href="https://x.com/ujustgotleid" target="_blank" rel="noopener noreferrer"
-             className="opacity-0 text-warm-gray hover:text-charcoal transition-colors">
-            <TwitterIcon />
-          </a>
+             className="opacity-0 text-warm-gray hover:text-charcoal transition-colors"><TwitterIcon /></a>
         </div>
       </nav>
 
@@ -132,7 +126,7 @@ function HomeContent() {
       animate(ref.current.querySelectorAll('.widget'), {
         opacity: [0, 1],
         translateY: [15, 0],
-        delay: stagger(80),
+        delay: stagger(100),
         duration: 500,
         ease: 'outCubic',
       })
@@ -140,33 +134,31 @@ function HomeContent() {
   }, [])
 
   return (
-    <div ref={ref} className="h-full flex gap-5">
-      {/* Left column — name + github + strava */}
-      <div className="flex-1 flex flex-col gap-5 min-w-0">
-        {/* Name */}
-        <div className="widget opacity-0">
-          <h1 className="font-display text-3xl text-charcoal leading-tight">
-            lei <span className="italic text-gold-dark">(lay)</span> wu
-          </h1>
-          <p className="font-body text-xs text-warm-gray mt-1">
-            cs @ carleton · i like to build fun stuff
-          </p>
-        </div>
-
-        {/* GitHub */}
-        <div className="widget opacity-0">
-          <GitHubHeatmap />
-        </div>
-
-        {/* Strava */}
-        <div className="widget opacity-0">
-          <StravaHeatmap />
-        </div>
+    <div ref={ref} className="h-full flex flex-col items-center justify-center gap-6 max-w-3xl mx-auto">
+      {/* About */}
+      <div className="widget opacity-0 w-full">
+        <h1 className="font-display text-3xl text-charcoal leading-tight">
+          lei <span className="italic text-gold-dark">(lay)</span> wu
+        </h1>
+        <p className="font-body text-xs text-warm-gray mt-1 max-w-lg">
+          4th year cs @ carleton · i like to build fun stuff · co-op experience in data analysis,
+          project coordination, and software dev · gym rat · riot games leaderboard player
+        </p>
       </div>
 
-      {/* Right column — spotify */}
-      <div className="widget opacity-0 w-52 flex-shrink-0">
+      {/* Spotify */}
+      <div className="widget opacity-0 w-full">
         <SpotifyNow />
+      </div>
+
+      {/* GitHub */}
+      <div className="widget opacity-0 w-full">
+        <GitHubHeatmap />
+      </div>
+
+      {/* Strava */}
+      <div className="widget opacity-0 w-full">
+        <StravaHeatmap />
       </div>
     </div>
   )
