@@ -99,9 +99,9 @@ const GitHubHeatmap = () => {
         </div>
       </div>
 
-      {/* Hover detail or legend */}
-      <div className="flex items-center justify-between mt-1.5">
-        <span className="font-mono text-[10px] text-warm-gray h-3">
+      {/* Hover detail + legend — fixed height so nothing shifts */}
+      <div className="flex items-center justify-between mt-1.5 h-4">
+        <span className="font-mono text-[10px] text-warm-gray">
           {hovered ? `${hovered.date} — ${hovered.count} contributions` : ''}
         </span>
         <div className="flex items-center gap-1 text-[9px] font-body text-warm-gray">

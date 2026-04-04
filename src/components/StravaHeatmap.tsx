@@ -106,49 +106,51 @@ const StravaHeatmap = () => {
         <span className="font-mono text-[10px] text-warm-gray">{totalActs} activities · {fmtDist(totalDist)}</span>
       </div>
 
-      <div ref={gridRef} className="grid grid-cols-6 gap-[2px]">
-        {months.slice(0, 12).map((m) => (
-          <button
-            key={m.month}
-            onClick={() => handleClick(m)}
-            className={`strava-cell opacity-0 h-10 flex flex-col items-center justify-center
-                       cursor-pointer transition-all duration-150 text-center
-                       ${activityColor(m.activityCount)}
-                       ${selected === m.month ? 'ring-1 ring-charcoal' : 'hover:brightness-95'}`}
-          >
-            <span className="font-mono text-[7px] text-charcoal/40 leading-none">{m.monthName.slice(0, 3)} {m.year.slice(2)}</span>
-            <span className="font-mono text-sm font-bold text-charcoal leading-none mt-0.5">{m.activityCount}</span>
-          </button>
-        ))}
-      </div>
-
-      {selected && (
-        <div className="mt-1">
-          {loadingActs ? (
-            <p className="font-mono text-[10px] text-warm-gray animate-pulse">loading...</p>
-          ) : activities.length > 0 ? (
-            <div className="space-y-0.5">
-              {activities.slice(0, 4).map((a) => (
-                <a
-                  key={a.id}
-                  href={`https://www.strava.com/activities/${a.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex justify-between font-mono text-[10px] text-warm-gray hover:text-charcoal transition-colors"
-                >
-                  <span className="truncate mr-2">{a.name}</span>
-                  <span className="flex-shrink-0">{fmtDist(a.distance)} · {fmtTime(a.moving_time)}</span>
-                </a>
-              ))}
-              {activities.length > 4 && (
-                <p className="font-mono text-[9px] text-warm-gray/50">+{activities.length - 4} more</p>
-              )}
-            </div>
-          ) : (
-            <p className="font-mono text-[10px] text-warm-gray">no activities</p>
-          )}
+      <div className="relative">
+        <div ref={gridRef} className="grid grid-cols-6 gap-[2px]">
+          {months.slice(0, 12).map((m) => (
+            <button
+              key={m.month}
+              onClick={() => handleClick(m)}
+              className={`strava-cell opacity-0 h-10 flex flex-col items-center justify-center
+                         cursor-pointer transition-all duration-150 text-center
+                         ${activityColor(m.activityCount)}
+                         ${selected === m.month ? 'ring-1 ring-charcoal' : 'hover:brightness-95'}`}
+            >
+              <span className="font-mono text-[7px] text-charcoal/40 leading-none">{m.monthName.slice(0, 3)} {m.year.slice(2)}</span>
+              <span className="font-mono text-sm font-bold text-charcoal leading-none mt-0.5">{m.activityCount}</span>
+            </button>
+          ))}
         </div>
-      )}
+
+        {selected && (
+          <div className="absolute left-0 right-0 top-full mt-1 bg-cream border border-charcoal/10 p-3 z-10 shadow-sm">
+            {loadingActs ? (
+              <p className="font-mono text-[10px] text-warm-gray animate-pulse">loading...</p>
+            ) : activities.length > 0 ? (
+              <div className="space-y-0.5">
+                {activities.slice(0, 4).map((a) => (
+                  <a
+                    key={a.id}
+                    href={`https://www.strava.com/activities/${a.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex justify-between font-mono text-[10px] text-warm-gray hover:text-charcoal transition-colors"
+                  >
+                    <span className="truncate mr-2">{a.name}</span>
+                    <span className="flex-shrink-0">{fmtDist(a.distance)} · {fmtTime(a.moving_time)}</span>
+                  </a>
+                ))}
+                {activities.length > 4 && (
+                  <p className="font-mono text-[9px] text-warm-gray/50">+{activities.length - 4} more</p>
+                )}
+              </div>
+            ) : (
+              <p className="font-mono text-[10px] text-warm-gray">no activities</p>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
