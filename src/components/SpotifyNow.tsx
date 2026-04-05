@@ -159,7 +159,7 @@ const SpotifyNow = () => {
       </div>
 
       {/* Recently played — compact */}
-      <div className="sp opacity-0 mt-auto">
+      <div className="sp opacity-0 mt-3">
         <h3 className="font-display text-sm italic text-charcoal mb-1">recent</h3>
         {stats.recentlyPlayed.slice(0, 3).map((item, i) => (
           <a key={`r-${i}`} href={item.track.external_urls.spotify} target="_blank" rel="noopener noreferrer"
