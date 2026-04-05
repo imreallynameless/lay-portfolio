@@ -80,14 +80,14 @@ const GitHubHeatmap = () => {
         <span className="font-mono text-[10px] text-warm-gray">{total.toLocaleString()} this year</span>
       </div>
 
-      <div ref={gridRef} className="overflow-hidden w-full">
-        <div className="flex gap-[2px] w-full justify-between">
+      <div ref={gridRef} className="w-full">
+        <div className="flex gap-[2px] w-full">
           {weeks.map((week, wi) => (
-            <div key={wi} className="flex flex-col gap-[2px]">
+            <div key={wi} className="flex flex-col gap-[2px] flex-1 min-w-0">
               {week.map((day, di) => (
                 <div
                   key={`${wi}-${di}`}
-                  className={`c w-[9px] h-[9px] opacity-0 cursor-pointer
+                  className={`c aspect-square opacity-0 cursor-pointer
                              ${colorToLevel(day.count)}
                              ${hovered?.date === day.date ? 'ring-1 ring-charcoal' : ''}`}
                   onMouseEnter={() => setHovered(day)}
