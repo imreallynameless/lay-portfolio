@@ -84,11 +84,11 @@ const SpotifyNow = () => {
   const artists = stats.topArtists[range]
 
   return (
-    <div ref={ref} className="h-full flex flex-col">
+    <div ref={ref} className="h-full flex flex-col gap-4">
       {/* Now playing — compact inline */}
       {np.item && (
         <a href={np.item.external_urls.spotify} target="_blank" rel="noopener noreferrer"
-          className="sp opacity-0 flex items-center gap-2 mb-3 group">
+          className="sp opacity-0 flex items-center gap-2 group">
           <div className="relative flex-shrink-0">
             <img src={np.item.album.images[0]?.url} alt="" className="w-8 h-8 object-cover" />
             {np.is_playing && <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-gold animate-pulse" />}
@@ -115,7 +115,7 @@ const SpotifyNow = () => {
       )}
 
       {/* Top tracks header + toggle */}
-      <div className="sp opacity-0 flex items-baseline justify-between mb-1.5">
+      <div className="sp opacity-0 flex items-baseline justify-between mb-1.5" style={{}}>
         <h3 className="font-display text-sm italic text-charcoal">top tracks</h3>
         <div className="flex">
           {timeRanges.map((t) => (
@@ -129,7 +129,7 @@ const SpotifyNow = () => {
       </div>
 
       {/* Top tracks list */}
-      <div ref={listRef} className="mb-3">
+      <div ref={listRef}>
         {tracks.map((track, i) => (
           <a key={`${range}-${i}`} href={track.external_urls.spotify} target="_blank" rel="noopener noreferrer"
             className="tr opacity-0 flex items-center gap-1.5 py-[3px] group hover:bg-gold/5 transition-colors">
@@ -142,7 +142,7 @@ const SpotifyNow = () => {
       </div>
 
       {/* Top artists — small row */}
-      <div className="sp opacity-0 mb-3">
+      <div className="sp opacity-0">
         <h3 className="font-display text-sm italic text-charcoal mb-1.5">top artists</h3>
         <div className="flex gap-[3px]">
           {artists.map((artist, i) => (
@@ -159,7 +159,7 @@ const SpotifyNow = () => {
       </div>
 
       {/* Recently played — compact */}
-      <div className="sp opacity-0 mt-2">
+      <div className="sp opacity-0">
         <h3 className="font-display text-sm italic text-charcoal mb-1">recent</h3>
         {stats.recentlyPlayed.slice(0, 3).map((item, i) => (
           <a key={`r-${i}`} href={item.track.external_urls.spotify} target="_blank" rel="noopener noreferrer"
