@@ -148,9 +148,9 @@ function HomeContent() {
 
         {/* Right: github + strava stacked */}
         <div className="flex-1 flex flex-col min-w-0">
-          <div className="cell flex-1"><GitHubHeatmap /></div>
+          <div className="cell"><GitHubHeatmap /></div>
           <div className="w-full h-px bg-charcoal/10 my-4" />
-          <div className="cell flex-1"><StravaHeatmap /></div>
+          <div className="cell"><StravaHeatmap /></div>
         </div>
       </div>
 
