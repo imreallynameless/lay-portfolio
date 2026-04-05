@@ -104,61 +104,55 @@ function App() {
 }
 
 function HomeContent() {
-  const ref = useRef<HTMLDivElement>(null)
+  const desktopRef = useRef<HTMLDivElement>(null)
+  const mobileRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (ref.current) {
-      animate(ref.current.querySelectorAll('.cell'), {
-        opacity: [0, 1], translateY: [15, 0], delay: stagger(60), duration: 500, ease: 'outCubic',
-      })
+    // Animate whichever is visible
+    const animateCells = (container: HTMLElement | null) => {
+      if (!container) return
+      const cells = container.querySelectorAll('.cell')
+      if (cells.length) {
+        animate(cells, {
+          opacity: [0, 1], translateY: [15, 0], delay: stagger(60), duration: 500, ease: 'outCubic',
+        })
+      }
     }
+    animateCells(desktopRef.current)
+    animateCells(mobileRef.current)
   }, [])
+
+  const nameBlock = (
+    <>
+      <h1 className="font-display text-2xl text-charcoal leading-tight">
+        lei <span className="italic text-gold-dark">(lay)</span> wu
+      </h1>
+      <p className="font-body text-xs text-warm-gray mt-0.5">
+        cs @ carleton · i like to build fun stuff
+      </p>
+    </>
+  )
 
   return (
     <>
       {/* Desktop: bento grid */}
-      <div ref={ref} className="hidden md:grid h-full gap-3"
+      <div ref={desktopRef} className="hidden md:grid h-full gap-3"
         style={{
           gridTemplateColumns: '5fr 4fr 3fr',
-          gridTemplateRows: 'auto 1fr auto',
+          gridTemplateRows: 'auto 1fr',
         }}>
-        {/* Row 1: Name spanning all */}
-        <div className="cell opacity-0 col-span-3 flex items-baseline gap-3">
-          <h1 className="font-display text-2xl text-charcoal leading-tight">
-            lei <span className="italic text-gold-dark">(lay)</span> wu
-          </h1>
-          <p className="font-body text-xs text-warm-gray">
-            cs @ carleton · i like to build fun stuff
-          </p>
-        </div>
-
-        {/* Row 2 Left: Spotify */}
-        <div className="cell opacity-0 overflow-auto pr-2">
-          <SpotifyStats />
-        </div>
-
-        {/* Row 2 Middle: GitHub */}
-        <div className="cell opacity-0 flex flex-col">
-          <GitHubHeatmap />
-        </div>
-
-        {/* Row 2 Right: Strava */}
-        <div className="cell opacity-0 flex flex-col">
-          <StravaHeatmap />
-        </div>
+        <div className="cell col-span-3">{nameBlock}</div>
+        <div className="cell overflow-auto pr-2"><SpotifyStats /></div>
+        <div className="cell"><GitHubHeatmap /></div>
+        <div className="cell"><StravaHeatmap /></div>
       </div>
 
       {/* Mobile: vertical scroll */}
-      <div ref={!ref.current ? ref : undefined} className="md:hidden space-y-4 overflow-auto h-full pb-8">
-        <div className="cell opacity-0">
-          <h1 className="font-display text-2xl text-charcoal leading-tight">
-            lei <span className="italic text-gold-dark">(lay)</span> wu
-          </h1>
-          <p className="font-body text-xs text-warm-gray mt-1">cs @ carleton · i like to build fun stuff</p>
-        </div>
-        <div className="cell opacity-0"><SpotifyStats /></div>
-        <div className="cell opacity-0"><GitHubHeatmap /></div>
-        <div className="cell opacity-0"><StravaHeatmap /></div>
+      <div ref={mobileRef} className="md:hidden space-y-4 overflow-auto h-full pb-8">
+        <div className="cell">{nameBlock}</div>
+        <div className="cell"><SpotifyStats /></div>
+        <div className="cell"><GitHubHeatmap /></div>
+        <div className="cell"><StravaHeatmap /></div>
       </div>
     </>
   )
