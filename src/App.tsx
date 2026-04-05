@@ -135,16 +135,23 @@ function HomeContent() {
 
   return (
     <>
-      {/* Desktop: bento grid */}
-      <div ref={desktopRef} className="hidden md:grid h-full gap-3"
-        style={{
-          gridTemplateColumns: '5fr 4fr 3fr',
-          gridTemplateRows: 'auto 1fr',
-        }}>
-        <div className="cell col-span-3">{nameBlock}</div>
-        <div className="cell overflow-auto pr-2"><SpotifyStats /></div>
-        <div className="cell"><GitHubHeatmap /></div>
-        <div className="cell"><StravaHeatmap /></div>
+      {/* Desktop: two columns */}
+      <div ref={desktopRef} className="hidden md:flex h-full gap-8">
+        {/* Left: name + spotify */}
+        <div className="flex-1 flex flex-col min-w-0">
+          <div className="cell mb-4">{nameBlock}</div>
+          <div className="cell flex-1 overflow-auto"><SpotifyStats /></div>
+        </div>
+
+        {/* Separator */}
+        <div className="w-px bg-charcoal/10 flex-shrink-0" />
+
+        {/* Right: github + strava stacked */}
+        <div className="flex-1 flex flex-col min-w-0">
+          <div className="cell flex-1"><GitHubHeatmap /></div>
+          <div className="w-full h-px bg-charcoal/10 my-4" />
+          <div className="cell flex-1"><StravaHeatmap /></div>
+        </div>
       </div>
 
       {/* Mobile: vertical scroll */}
