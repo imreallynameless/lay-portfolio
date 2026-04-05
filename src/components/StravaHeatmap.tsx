@@ -109,7 +109,7 @@ const StravaHeatmap = () => {
       </div>
 
       <div className="relative">
-        <div ref={gridRef} className="grid grid-cols-6 gap-[2px]">
+        <div ref={gridRef} className="grid grid-cols-4 gap-[2px]">
           {last12Months.map((m) => (
             <button
               key={m.month}

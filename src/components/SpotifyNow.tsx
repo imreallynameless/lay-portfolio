@@ -10,10 +10,7 @@ type Artist = {
 type Track = {
   name: string
   artists: { name: string }[]
-  album: {
-    name: string
-    images: { url: string }[]
-  }
+  album: { name: string; images: { url: string }[] }
   external_urls: { spotify: string }
   duration_ms?: number
 }
@@ -27,24 +24,16 @@ type NowPlaying = {
 type SpotifyStats = {
   nowPlaying: NowPlaying
   recentlyPlayed: { track: Track; played_at: string }[]
-  topTracks: {
-    monthly: Track[]
-    sixMonth: Track[]
-    allTime: Track[]
-  }
-  topArtists: {
-    monthly: Artist[]
-    sixMonth: Artist[]
-    allTime: Artist[]
-  }
+  topTracks: { monthly: Track[]; sixMonth: Track[]; allTime: Track[] }
+  topArtists: { monthly: Artist[]; sixMonth: Artist[]; allTime: Artist[] }
 }
 
 const STATS_ENDPOINT = 'https://spotify.leiwuhoo.workers.dev/get-spotify-stats'
 
 const timeRanges = [
-  { id: 'monthly', label: '4 weeks' },
-  { id: 'sixMonth', label: '6 months' },
-  { id: 'allTime', label: 'all time' },
+  { id: 'monthly', label: '4w' },
+  { id: 'sixMonth', label: '6m' },
+  { id: 'allTime', label: 'all' },
 ] as const
 
 type TimeRange = (typeof timeRanges)[number]['id']
@@ -73,33 +62,21 @@ const SpotifyNow = () => {
 
   useEffect(() => {
     if (!loading && ref.current) {
-      animate(ref.current.querySelectorAll('.sp-animate'), {
-        opacity: [0, 1],
-        translateY: [10, 0],
-        delay: stagger(60),
-        duration: 400,
-        ease: 'outCubic',
+      animate(ref.current.querySelectorAll('.sp'), {
+        opacity: [0, 1], translateY: [8, 0], delay: stagger(40), duration: 300, ease: 'outCubic',
       })
     }
   }, [loading])
 
-  // Re-animate list when range changes
   useEffect(() => {
     if (listRef.current) {
-      animate(listRef.current.querySelectorAll('.track-row'), {
-        opacity: [0, 1],
-        translateX: [8, 0],
-        delay: stagger(40),
-        duration: 300,
-        ease: 'outCubic',
+      animate(listRef.current.querySelectorAll('.tr'), {
+        opacity: [0, 1], translateX: [6, 0], delay: stagger(30), duration: 200, ease: 'outCubic',
       })
     }
   }, [range, loading])
 
-  if (loading) {
-    return <p className="font-body text-xs text-warm-gray animate-pulse">loading spotify...</p>
-  }
-
+  if (loading) return <p className="font-body text-xs text-warm-gray animate-pulse">loading spotify...</p>
   if (!stats) return null
 
   const np = stats.nowPlaying
@@ -107,39 +84,29 @@ const SpotifyNow = () => {
   const artists = stats.topArtists[range]
 
   return (
-    <div ref={ref}>
-      {/* Now playing */}
+    <div ref={ref} className="h-full flex flex-col">
+      {/* Now playing — compact inline */}
       {np.item && (
-        <a
-          href={np.item.external_urls.spotify}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="sp-animate opacity-0 flex items-center gap-3 group mb-4"
-        >
+        <a href={np.item.external_urls.spotify} target="_blank" rel="noopener noreferrer"
+          className="sp opacity-0 flex items-center gap-2 mb-3 group">
           <div className="relative flex-shrink-0">
-            <img
-              src={np.item.album.images[0]?.url}
-              alt={np.item.album.name}
-              className="w-10 h-10 object-cover group-hover:opacity-80 transition-opacity"
-            />
-            {np.is_playing && (
-              <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-gold animate-pulse" />
-            )}
+            <img src={np.item.album.images[0]?.url} alt="" className="w-8 h-8 object-cover" />
+            {np.is_playing && <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-gold animate-pulse" />}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="flex items-baseline gap-2">
-              <h3 className="font-display text-base italic text-charcoal flex-shrink-0">
-                {np.is_playing ? 'playing' : 'last played'}
-              </h3>
-              <span className="font-body text-xs text-charcoal font-medium truncate group-hover:text-gold-dark transition-colors">
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-display text-sm italic text-charcoal flex-shrink-0">
+                {np.is_playing ? '♫' : '♫'}
+              </span>
+              <span className="font-body text-[11px] text-charcoal truncate group-hover:text-gold-dark transition-colors">
                 {np.item.name}
               </span>
-              <span className="font-body text-[10px] text-warm-gray truncate hidden sm:inline">
+              <span className="font-body text-[9px] text-warm-gray truncate">
                 {np.item.artists.map((a) => a.name).join(', ')}
               </span>
             </div>
             {np.is_playing && np.progress_ms && np.item.duration_ms && (
-              <div className="mt-1 h-[2px] bg-charcoal/10 max-w-xs">
+              <div className="mt-0.5 h-[1px] bg-charcoal/10">
                 <div className="h-full bg-gold" style={{ width: `${(np.progress_ms / np.item.duration_ms) * 100}%` }} />
               </div>
             )}
@@ -147,100 +114,59 @@ const SpotifyNow = () => {
         </a>
       )}
 
-      {/* Header + range toggle */}
-      <div className="sp-animate opacity-0 flex items-baseline justify-between mb-3">
-        <h3 className="font-display text-base italic text-charcoal">top tracks</h3>
-        <div className="flex gap-1">
+      {/* Top tracks header + toggle */}
+      <div className="sp opacity-0 flex items-baseline justify-between mb-1.5">
+        <h3 className="font-display text-sm italic text-charcoal">top tracks</h3>
+        <div className="flex">
           {timeRanges.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setRange(t.id)}
-              className={`px-2 py-0.5 text-[10px] font-mono cursor-pointer transition-all duration-150
-                         ${range === t.id
-                           ? 'bg-charcoal text-cream'
-                           : 'text-warm-gray hover:text-charcoal'
-                         }`}
-            >
+            <button key={t.id} onClick={() => setRange(t.id)}
+              className={`px-1.5 py-0.5 text-[9px] font-mono cursor-pointer transition-all duration-150
+                ${range === t.id ? 'bg-charcoal text-cream' : 'text-warm-gray hover:text-charcoal'}`}>
               {t.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Top tracks */}
-      <div ref={listRef} className="space-y-1 mb-4">
+      {/* Top tracks list */}
+      <div ref={listRef} className="mb-3">
         {tracks.map((track, i) => (
-          <a
-            key={`${range}-${track.name}-${i}`}
-            href={track.external_urls.spotify}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="track-row opacity-0 flex items-center gap-2.5 py-1 group hover:bg-gold/5 transition-colors -mx-1 px-1"
-          >
-            <span className="font-mono text-[10px] text-warm-gray w-3 text-right flex-shrink-0">{i + 1}</span>
-            <img
-              src={track.album.images[track.album.images.length - 1]?.url}
-              alt={track.album.name}
-              className="w-7 h-7 object-cover flex-shrink-0"
-            />
-            <div className="min-w-0 flex-1">
-              <p className="font-body text-xs text-charcoal truncate group-hover:text-gold-dark transition-colors">
-                {track.name}
-              </p>
-              <p className="font-body text-[10px] text-warm-gray truncate">
-                {track.artists.map((a) => a.name).join(', ')}
-              </p>
-            </div>
+          <a key={`${range}-${i}`} href={track.external_urls.spotify} target="_blank" rel="noopener noreferrer"
+            className="tr opacity-0 flex items-center gap-1.5 py-[3px] group hover:bg-gold/5 transition-colors">
+            <span className="font-mono text-[9px] text-warm-gray/50 w-2.5 text-right">{i + 1}</span>
+            <img src={track.album.images[track.album.images.length - 1]?.url} alt="" className="w-5 h-5 object-cover flex-shrink-0" />
+            <span className="font-body text-[11px] text-charcoal truncate group-hover:text-gold-dark transition-colors">{track.name}</span>
+            <span className="font-body text-[9px] text-warm-gray truncate">— {track.artists[0]?.name}</span>
           </a>
         ))}
       </div>
 
-      {/* Top artists */}
-      <div className="sp-animate opacity-0">
-        <h3 className="font-display text-base italic text-charcoal mb-2">top artists</h3>
-        <div className="flex gap-1">
+      {/* Top artists — small row */}
+      <div className="sp opacity-0 mb-3">
+        <h3 className="font-display text-sm italic text-charcoal mb-1.5">top artists</h3>
+        <div className="flex gap-[3px]">
           {artists.map((artist, i) => (
-            <a
-              key={`${range}-${artist.name}-${i}`}
-              href={artist.external_urls.spotify}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 min-w-0 group text-center"
-            >
+            <a key={`${range}-a-${i}`} href={artist.external_urls.spotify} target="_blank" rel="noopener noreferrer"
+              className="flex-1 min-w-0 group text-center">
               {artist.images?.[0] && (
-                <img
-                  src={artist.images[artist.images.length > 1 ? 1 : 0]?.url}
-                  alt={artist.name}
-                  className="w-full aspect-square object-cover group-hover:opacity-80 transition-opacity"
-                />
+                <img src={artist.images[artist.images.length > 1 ? 1 : 0]?.url} alt={artist.name}
+                  className="w-full aspect-square object-cover group-hover:opacity-75 transition-opacity" />
               )}
-              <p className="font-body text-[10px] text-warm-gray mt-1 truncate group-hover:text-charcoal transition-colors">
-                {artist.name}
-              </p>
+              <p className="font-mono text-[8px] text-warm-gray mt-0.5 truncate">{artist.name}</p>
             </a>
           ))}
         </div>
       </div>
 
-      {/* Recently played */}
-      <div className="sp-animate opacity-0 mt-4">
-        <h3 className="font-display text-base italic text-charcoal mb-2">recently played</h3>
-        <div className="space-y-0.5">
-          {stats.recentlyPlayed.slice(0, 5).map((item, i) => (
-            <a
-              key={`recent-${i}`}
-              href={item.track.external_urls.spotify}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex justify-between font-mono text-[10px] text-warm-gray hover:text-charcoal transition-colors py-0.5"
-            >
-              <span className="truncate mr-2">{item.track.name} — {item.track.artists[0]?.name}</span>
-              <span className="flex-shrink-0 text-warm-gray/50">
-                {new Date(item.played_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
-            </a>
-          ))}
-        </div>
+      {/* Recently played — compact */}
+      <div className="sp opacity-0 mt-auto">
+        <h3 className="font-display text-sm italic text-charcoal mb-1">recent</h3>
+        {stats.recentlyPlayed.slice(0, 3).map((item, i) => (
+          <a key={`r-${i}`} href={item.track.external_urls.spotify} target="_blank" rel="noopener noreferrer"
+            className="flex justify-between font-mono text-[9px] text-warm-gray hover:text-charcoal transition-colors py-[1px]">
+            <span className="truncate mr-2">{item.track.name} — {item.track.artists[0]?.name}</span>
+          </a>
+        ))}
       </div>
     </div>
   )
