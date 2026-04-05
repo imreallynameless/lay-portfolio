@@ -92,10 +92,10 @@ const StravaHeatmap = () => {
     }
   }
 
-  const currentYear = new Date().getFullYear().toString()
-  const thisYearMonths = months.filter((m) => m.year === currentYear)
-  const totalActs = thisYearMonths.reduce((s, m) => s + m.activityCount, 0)
-  const totalDist = thisYearMonths.reduce((s, m) => s + m.totalDistance, 0)
+  // Rolling last 12 months (matches github heatmap behavior)
+  const last12Months = months.slice(0, 12).reverse()
+  const totalActs = last12Months.reduce((s, m) => s + m.activityCount, 0)
+  const totalDist = last12Months.reduce((s, m) => s + m.totalDistance, 0)
 
   if (loading) {
     return <p className="font-body text-xs text-warm-gray animate-pulse">loading strava...</p>
@@ -110,7 +110,7 @@ const StravaHeatmap = () => {
 
       <div className="relative">
         <div ref={gridRef} className="grid grid-cols-6 gap-[2px]">
-          {thisYearMonths.map((m) => (
+          {last12Months.map((m) => (
             <button
               key={m.month}
               onClick={() => handleClick(m)}
