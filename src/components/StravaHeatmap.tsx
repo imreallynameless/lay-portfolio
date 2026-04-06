@@ -93,7 +93,7 @@ const StravaHeatmap = () => {
   }
 
   // Rolling last 12 months (matches github heatmap behavior)
-  const last12Months = months.slice(0, 12).reverse()
+  const last12Months = months.slice(0, 12)
   const totalActs = last12Months.reduce((s, m) => s + m.activityCount, 0)
   const totalDist = last12Months.reduce((s, m) => s + m.totalDistance, 0)
 
