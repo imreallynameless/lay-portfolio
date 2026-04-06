@@ -84,7 +84,7 @@ const SpotifyNow = () => {
   const artists = stats.topArtists[range]
 
   return (
-    <div ref={ref} className="h-full flex flex-col gap-4">
+    <div ref={ref} className="h-full flex flex-col gap-3">
       {/* Now playing — compact inline */}
       {np.item && (
         <a href={np.item.external_urls.spotify} target="_blank" rel="noopener noreferrer"
