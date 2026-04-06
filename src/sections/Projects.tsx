@@ -60,32 +60,28 @@ const Projects = () => {
     <div ref={sectionRef} className="h-full flex flex-col">
       <h2 className="font-display text-3xl italic text-charcoal mb-6">projects</h2>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 flex-1 content-start">
+      <div className="flex flex-col gap-2 flex-1 content-start">
         {projects.map((project) => (
           <a
             key={project.title}
             href={project.url}
             target={project.url ? '_blank' : undefined}
             rel={project.url ? 'noopener noreferrer' : undefined}
-            className={`project-card opacity-0 group bg-cream-dark p-4
-                       hover:bg-gold/10 hover:shadow-md hover:shadow-gold/10
-                       transition-all duration-300
+            className={`project-card opacity-0 group flex items-baseline gap-3 py-3
+                       border-b border-charcoal/5 last:border-b-0
+                       hover:bg-gold/5 transition-all duration-200 px-1
                        ${project.url ? 'cursor-pointer' : 'cursor-default'}`}
           >
-            <div className="flex items-start justify-between mb-2">
-              <h3 className="font-display text-lg text-charcoal group-hover:text-gold-dark transition-colors">
-                {project.title}
-              </h3>
-              {project.url && (
-                <span className="text-warm-gray group-hover:text-gold-dark transition-colors text-xs font-mono mt-1">↗</span>
-              )}
-            </div>
+            <h3 className="font-display text-lg text-charcoal group-hover:text-gold-dark transition-colors flex-shrink-0 min-w-[140px]">
+              {project.title}
+              {project.url && <span className="text-warm-gray group-hover:text-gold-dark text-xs font-mono ml-1">↗</span>}
+            </h3>
 
-            <p className="font-body text-xs text-charcoal/55 leading-relaxed mb-3">
+            <p className="font-body text-xs text-charcoal/55 leading-relaxed flex-1">
               {project.description}
             </p>
 
-            <div className="flex flex-wrap gap-1">
+            <div className="flex gap-1 flex-shrink-0">
               {project.tags.map((tag) => (
                 <span
                   key={tag}
