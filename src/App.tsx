@@ -128,7 +128,7 @@ function HomeContent() {
         lei <span className="italic text-gold-dark">(lay)</span> wu
       </h1>
       <p className="font-body text-xs text-warm-gray mt-0.5">
-        cs @ carleton · i like to build fun stuff
+        fun stuff engineer @ shopify · building fun things
       </p>
     </>
   )
