@@ -34,6 +34,12 @@ const projects: Project[] = [
     tags: ['p5.js', 'data viz'],
   },
   {
+    title: 'Valorant Predictor',
+    description: 'Win/round prediction agent for Valorant using machine learning models.',
+    url: 'https://github.com/imreallynameless/Win-Round-Agent-Predictor-Valorant',
+    tags: ['python', 'ml'],
+  },
+  {
     title: 'Search Engine',
     description: 'Python web crawler with PageRank, cosine similarity, and TF-IDF ranking.',
     tags: ['python', 'nlp'],
